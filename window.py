@@ -87,8 +87,8 @@ class Main(Tk):
         self.files = []
         folder = askdirectory()
         for f in os.listdir(folder):
-            if re.search('e(?i)\.jpg', f):
-                self.files.append(str(Path(folder+"/"+f).resolve()))
+            if re.search('(?i)\.tif', f):
+                self.files.append(str(Path(folder+"\\"+f).resolve()))
         self.file_strings.set('\n'.join(self.files))
         self.count = 0
 
@@ -105,7 +105,7 @@ class Main(Tk):
             self.progress['value'] += 1
         self.process.set('Rendering')
         for n, i in enumerate(self.files):
-            image = tifffile.imread(i)
+            image = io.imread(i)
             for j in self.to_display[n]:
                 for k in j:
                     p0, p1 = k

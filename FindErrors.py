@@ -7,13 +7,16 @@ from skimage.filters import threshold_otsu
 from skimage import img_as_ubyte
 import numpy as np
 from FindLines import find_lines
+from FindLines import new_lines
 import math
 from pathlib import Path
+import time
 
 
 def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     path = Path(filename)
-    image = Image.open('/Volumes/Untitled/10bcd15202_651_30_8bit_rgbiR.tif').convert("L")
+    print(str(path))
+    image = Image.open(filename).convert("L")
     image = np.array(image)
     im_shape = np.shape(image)
 
@@ -21,8 +24,13 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     if reduce_rate:
         image = np.multiply(np.floor(np.divide(image, 2**reduce_rate)), 2**reduce_rate)
 
+    print('start processing')
+
     if otsu:
         thresh = threshold_otsu(image)
+
+        print('done otsu')
+
         edges = canny(image, sigma, low*thresh, high*thresh)
     else:
         edges = canny(image, sigma, low, high)
@@ -49,8 +57,9 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     print('done AND')
 
     thin_lines = skeletonize(line_and_edge)
-    filtered_lines = find_lines(thin_lines)
-
+    start_time = time.time()
+    filtered_lines = new_lines(thin_lines)
+    print('new:' + str(time.time() - start_time))
     print('done find lines')
 
     long_lines = []
