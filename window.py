@@ -39,6 +39,7 @@ class Main(Tk):
         self.low = StringVar()
         self.high.set(.9)
         self.low.set(.4)
+        self.otsu.set(1)
 
         ttk.Label(mainframe, text="Processing:").grid(row=2, column=0, sticky=(W, S))
         ttk.Label(mainframe, textvariable=self.process).grid(row=2, column=1, sticky=S)
@@ -87,7 +88,7 @@ class Main(Tk):
         self.files = []
         folder = askdirectory()
         for f in os.listdir(folder):
-            if re.search('(?i)\.tif', f):
+            if re.search('(?i)\.jpg', f):
                 self.files.append(str(Path(folder+"\\"+f).resolve()))
         self.file_strings.set('\n'.join(self.files))
         self.count = 0
@@ -100,18 +101,22 @@ class Main(Tk):
             self.process.set(f)
             self.update_idletasks()
             self.to_display.append([])
-            self.to_display[n].append(find_errors(f, self.bit_var, self.otsu.get(), float(self.high.get()),
-                                                  float(self.low.get())))
+            try:
+                self.to_display[n].append(find_errors(f, self.bit_var, self.otsu.get(), float(self.high.get()),
+                                                      float(self.low.get())))
+            except:
+                raise
             self.progress['value'] += 1
         self.process.set('Rendering')
-        for n, i in enumerate(self.files):
-            image = io.imread(i)
-            for j in self.to_display[n]:
-                for k in j:
-                    p0, p1 = k
-                    rr, cc = line(p0[0], p0[1], p1[0], p1[1])
-                    image[rr, cc] = 255
-            self.images.append(image)
+        # DONT TRY AND DISPLAY
+        # for n, i in enumerate(self.files):
+        #     image = io.imread(i)
+        #     for j in self.to_display[n]:
+        #         for k in j:
+        #             p0, p1 = k
+        #             rr, cc = line(p0[0], p0[1], p1[0], p1[1])
+        #             image[rr, cc] = 255
+        #     self.images.append(image)
         self.process.set('None')
         self.count = 1
 
