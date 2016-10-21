@@ -4,7 +4,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-hough = np.load("C:\\Users\\Malachite\\Desktop\\saved-split\\twice_15205_379_error_hough-lines.npy")
+hough = np.load("C:\\Malachite\\saved-split\\twice_water_somalia-5000x5000_error-lines.npy")
 # result = np.load("/Users/mal/FindLines/saved-split/long_15205_380_no_result-lines.npy")
 
 hough_heading = []
@@ -21,8 +21,6 @@ for x, l in enumerate(hough):
 #     res_heading.append(math.degrees(math.atan2((p0[0] - p1[0]), (p0[1] - p1[1]))))
 #     res_length(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2)))
 
-
-
 hough_hist, edges = np.histogram(hough_heading, 180, (-90, 90))
 # res_hist, _ = np.histogram(res_heading, 180, (-90, 90))
 #
@@ -30,5 +28,5 @@ hough_hist, edges = np.histogram(hough_heading, 180, (-90, 90))
 #
 plt.bar(edges[:-1], hough_hist, width=1)
 plt.xlim(min(edges), max(edges))
-# plt.savefig("/Users/mal/FindLines/res/15205_380_no.pdf", format='pdf')
+# plt.savefig("C:\\Malachite\\figs\\bcd15202_651-hough.pdf", format='pdf')
 plt.show()

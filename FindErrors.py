@@ -47,10 +47,14 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
         print('?')
         canny_edges = canny(image, sigma, low, high)
 
+    # plt.imshow(canny_edges)
+    # plt.show()
+
     # np.save("C:\\Malachite\\saved-split\\line_report_" + path.stem + "_edges.npy", edges)
 
     hough_split_time = time.time()
-    hough_lines = hough_split(canny_edges, 50, im_shape, path)
+    hough_lines = hough_split(canny_edges, 50, im_shape, 0)
+    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_all-hough-lines.npy", np.array(hough_lines))
     print('done hough split')
     print('hough split time: ' + str(time.time() - hough_split_time))
 
@@ -60,25 +64,28 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     # print('hough time: ' + str(time.time() - hough_time))
 
     # TO SAVE LINES
-    long_result_lines = []
+    long_hough_lines = []
     for x, l in enumerate(hough_lines):
         p0, p1 = l
         if math.fabs(math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2))) > 10:
-            long_result_lines.append(l)
-    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_hough-lines.npy", np.array(long_result_lines))
+            long_hough_lines.append(l)
+    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_hough-lines.npy", np.array(long_hough_lines))
 
     plot_time = time.time()
     hough_plot = np.zeros(im_shape, bool)
     for l in hough_lines:
         p0, p1 = l
-        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
+        rr, cc = line(int(p0[0]), int(p0[1]), int(p1[0]), int(p1[1]))
         hough_plot[rr, cc] = True
+
+    # plt.imshow(hough_plot)
+    # plt.show()
 
     print('done hough plot')
     print('hough plot time: ' + str(time.time() - plot_time))
 
     and_time = time.time()
-    result_image = np.logical_xor(canny_edges, hough_plot)
+    result_image = np.logical_and(canny_edges, hough_plot)
 
     thin_result_lines = skeletonize(result_image)
     found_result_lines = find_lines(thin_result_lines)
@@ -100,21 +107,24 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
         p0, p1 = l
         rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
         result_plot[rr, cc] = True
-    error_image = np.logical_or(result_plot, hough_plot)
+    error_image = np.logical_xor(result_plot, hough_plot)
     thin_error_lines = skeletonize(error_image)
     found_error_lines = find_lines(thin_error_lines)
     print('done error')
     print('error time:' + str(time.time() - error_time))
+    # plt.imshow(result_plot)
+    # plt.show()
 
     long_error_lines = []
     for l in found_error_lines:
         p0, p1 = l
         if p0[0] > p1[0]:
             l = (p1, p0)
-        if math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2)) > 5:
+        if math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2)) > 5:
             long_error_lines.append(l)
     print('length time - ignore this: ' + str(time.time() - length_time))
     np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_result-lines.npy", np.array(long_result_lines))
+    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_error-lines.npy", np.array(long_error_lines))
 
     with open("C:\\Malachite\\saved-split\\line_report_" + path.stem + "_" + str(high) + "_" + str(low) + ".txt", "w") as f:
         f.write("Line, Heading, Length")
