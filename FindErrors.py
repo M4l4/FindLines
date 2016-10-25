@@ -13,7 +13,7 @@ import time
 import matplotlib.pyplot as plt
 
 
-def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
+def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
     total_time = time.time()
     path = Path(filename)
     print(str(path))
@@ -22,7 +22,6 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     image = np.array(image)
     print('open time: ' + str(time.time() - open_time))
     im_shape = np.shape(image)
-    print(im_shape)
 
     # image = img_as_ubyte(image)
     # image = image[0:im_shape[0]/10, 0:im_shape[1]/10]
@@ -47,39 +46,22 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
         print('?')
         canny_edges = canny(image, sigma, low, high)
 
-    # plt.imshow(canny_edges)
-    # plt.show()
-
-    # np.save("C:\\Malachite\\saved-split\\line_report_" + path.stem + "_edges.npy", edges)
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-canny_plot.pdf", canny_edges, cmap='Greys')
 
     hough_split_time = time.time()
-    hough_lines = hough_split(canny_edges, 50, im_shape, 0)
-    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_all-hough-lines.npy", np.array(hough_lines))
+    hough_lines = hough_split(canny_edges, 25, im_shape, 0)
+    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_hough-lines.npy", np.array(hough_lines))
     print('done hough split')
     print('hough split time: ' + str(time.time() - hough_split_time))
-
-    # hough_time = time.time()
-    # lines = probabilistic_hough_line(edges, 10, 30)
-    # print('done hough')
-    # print('hough time: ' + str(time.time() - hough_time))
-
-    # TO SAVE LINES
-    long_hough_lines = []
-    for x, l in enumerate(hough_lines):
-        p0, p1 = l
-        if math.fabs(math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2))) > 10:
-            long_hough_lines.append(l)
-    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_hough-lines.npy", np.array(long_hough_lines))
 
     plot_time = time.time()
     hough_plot = np.zeros(im_shape, bool)
     for l in hough_lines:
         p0, p1 = l
-        rr, cc = line(int(p0[0]), int(p0[1]), int(p1[0]), int(p1[1]))
+        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
         hough_plot[rr, cc] = True
 
-    # plt.imshow(hough_plot)
-    # plt.show()
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-hough_plot.pdf", hough_plot, cmap='Greys')
 
     print('done hough plot')
     print('hough plot time: ' + str(time.time() - plot_time))
@@ -112,8 +94,14 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.4, sigma=1):
     found_error_lines = find_lines(thin_error_lines)
     print('done error')
     print('error time:' + str(time.time() - error_time))
-    # plt.imshow(result_plot)
-    # plt.show()
+
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_plot.pdf", result_plot, cmap='Greys')
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_image.pdf", result_image, cmap='Greys')
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result-skele_image.pdf", thin_result_lines, cmap='Greys')
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error_plot.pdf", error_image, cmap='Greys')
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error-skele_plot.pdf", thin_error_lines, cmap='Greys')
+
+
 
     long_error_lines = []
     for l in found_error_lines:

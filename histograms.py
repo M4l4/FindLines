@@ -4,7 +4,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-hough = np.load("C:\\Malachite\\saved-split\\twice_water_somalia-5000x5000_error-lines.npy")
+hough = np.load("C:\\Malachite\\saved-split\\twice_15205_379_error_error-lines.npy")
 # result = np.load("/Users/mal/FindLines/saved-split/long_15205_380_no_result-lines.npy")
 
 hough_heading = []
