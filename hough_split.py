@@ -18,7 +18,7 @@ def hough_split(img, splits, shape, overlap):
     for i in range(0, splits*2, 2):
         for j in range(0, splits*2, 2):
             slice_t = img[rr_edges[i]:rr_edges[i+1], cc_edges[j]:cc_edges[j+1]]
-            array = np.asarray(probabilistic_hough_line(slice_t, 40, 0)[:])
+            array = np.asarray(probabilistic_hough_line(slice_t, 60, 10, 2)[:])
             if array.size:
                 array[:, :, ::2] += cc_edges[j]
                 array[:, :, 1::2] += rr_edges[i]
