@@ -100,6 +100,7 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
     plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result-skele_image.pdf", thin_result_lines, cmap='Greys')
     plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error_plot.pdf", error_image, cmap='Greys')
     plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error-skele_plot.pdf", thin_error_lines, cmap='Greys')
+    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-canny-xor-res.pdf", np.logical_xor(hough_plot,result_plot), cmap='Greys')
 
 
 
