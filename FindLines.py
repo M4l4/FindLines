@@ -3,13 +3,15 @@ from scipy.ndimage.filters import convolve
 from collections import deque
 
 
-def find_lines(img):
+def find_lines(img, test=False):
     print('finding.........')
     lines = []
     weights = [[1, 1, 1],
                [1, 10, 1],
                [1, 1, 1]]
     weighted_image = convolve(img.astype(int), weights)
+    if test:
+        print(weighted_image)
     weighted_image *= (weighted_image > 10)
     endpoint_queue = deque(np.argwhere(weighted_image == 11))
     while endpoint_queue:
@@ -22,7 +24,7 @@ def find_lines(img):
             weighted_image[working_point[0], working_point[1]] = 0
             c = (weighted_image[working_point[0] - 1:working_point[0] + 2, working_point[1] - 1:working_point[1] + 2])
             p = np.flatnonzero(c)
-            if p:
+            if p.size:
                 p = p[0]
             else:
                 break
@@ -52,3 +54,21 @@ def find_lines(img):
             r = ((start_point[1], start_point[0]), (working_point[1], working_point[0]))
             lines.append(r)
     return lines
+
+if __name__ == "__main__":
+    a = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    a = np.array(a)
+
+    lines = find_lines(a, True)
+    for l in lines:
+        print(l)
+
