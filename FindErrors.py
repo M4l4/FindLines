@@ -76,83 +76,87 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
         p0, p1 = l
         if p0[0] > p1[0]:
             l = (p1, p0)
-        if math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2)) > 5:
+        if find_distance(p1, p0) > 5:
             long_result_lines.append(l)
 
-    error_time = time.time()
-    result_plot = np.zeros(im_shape, bool)
-    all_result_plot = np.zeros(im_shape, bool)
-    for l in long_result_lines:
-        p0, p1 = l
-        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
-        result_plot[rr, cc] = True
-    for l in found_result_lines:
-        p0, p1 = l
-        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
-        all_result_plot[rr, cc] = True
-    error_image = np.logical_xor(result_plot, hough_plot)
-    thin_error_lines = skeletonize(error_image)
-    found_error_lines = find_lines(thin_error_lines)
-    print('done error')
-    print('error time:' + str(time.time() - error_time))
+    # error_time = time.time()
+    # result_plot = np.zeros(im_shape, bool)
+    # all_result_plot = np.zeros(im_shape, bool)
+    # for l in long_result_lines:
+    #     p0, p1 = l
+    #     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
+    #     result_plot[rr, cc] = True
+    # for l in found_result_lines:
+    #     p0, p1 = l
+    #     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
+    #     all_result_plot[rr, cc] = True
+    # error_image = np.logical_xor(result_plot, hough_plot)
+    # thin_error_lines = skeletonize(error_image)
+    # found_error_lines = find_lines(thin_error_lines)
+    # print('done error')
+    # print('error time:' + str(time.time() - error_time))
+    #
+    # long_error_lines = []
+    # for l in found_error_lines:
+    #     p0, p1 = l
+    #     if p0[0] > p1[0]:
+    #         l = (p1, p0)
+    #     if find_distance(p1, p0) > 5:
+    #         long_error_lines.append(l)
+    #
+    # all_error_plot = np.zeros(im_shape, bool)
+    # long_error_plot = np.zeros(im_shape, bool)
+    # for l in found_error_lines:
+    #     p0, p1 = l
+    #     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
+    #     all_error_plot[rr, cc] = True
+    # for l in long_error_lines:
+    #     p0, p1 = l
+    #     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
+    #     long_error_plot[rr, cc] = True
+    # print('length time - ignore this: ' + str(time.time() - length_time))
+    # np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_result-lines.npy", np.array(long_result_lines))
+    # np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_error-lines.npy", np.array(long_error_lines))
+    #
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-hough_plot.pdf", hough_plot, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_plot.pdf", result_plot, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-all_result_plot.pdf", all_result_plot, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_image.pdf", result_image, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result-skele_image.pdf", thin_result_lines, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error_image.pdf", error_image, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error-skele_plot.pdf", thin_error_lines, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-canny-xor-res.pdf",
+    #            np.logical_xor(hough_plot, result_image), cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-all_error_plot.pdf", all_error_plot, cmap='Greys')
+    # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-long_error_plot.pdf", long_error_plot, cmap='Greys')
+    #
+    # with open("C:\\Malachite\\saved-split\\line_report_" + path.stem + "_" + str(high) + "_" + str(low) + ".txt",
+    #           "w") as f:
+    #     f.write("Line, Heading, Length")
+    #     for x, l in enumerate(long_result_lines):
+    #         p0, p1 = l
+    #         string = [str(x), ", ", str(math.degrees(math.atan2((p0[0] - p1[0]), (p0[1] - p1[1])))), ", ",
+    #                   str(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2))), "\n"]
+    #         # string.insert(1, str(p0))
+    #         # string.insert(3, str(p1))
+    #         # string.insert(5, str(math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2))))
+    #         # string.insert(7, str(math.degrees(math.atan2(p0[1] - p1[1], p1[0] - p0[0]))))
+    #         f.write("".join(string))
+    #
+    # with open("C:\\Malachite\\saved-split\\line_report_error_" + path.stem + "_" + str(high) + "_" + str(low) + ".txt",
+    #           "w") as f:
+    #     f.write("Line, Heading, Length")
+    #     for x, l in enumerate(long_error_lines):
+    #         p0, p1 = l
+    #         string = [str(x), ", ", str(math.degrees(math.atan2((p0[0] - p1[0]), (p0[1] - p1[1])))), ", ",
+    #                   str(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2))), "\n"]
+    #         f.write("".join(string))
+    # print('done find errors')
 
-    long_error_lines = []
-    for l in found_error_lines:
-        p0, p1 = l
-        if p0[0] > p1[0]:
-            l = (p1, p0)
-        if math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2)) > 5:
-            long_error_lines.append(l)
-
-    all_error_plot = np.zeros(im_shape, bool)
-    long_error_plot = np.zeros(im_shape, bool)
-    for l in found_error_lines:
-        p0, p1 = l
-        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
-        all_error_plot[rr, cc] = True
-    for l in long_error_lines:
-        p0, p1 = l
-        rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
-        long_error_plot[rr, cc] = True
-    print('length time - ignore this: ' + str(time.time() - length_time))
-    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_result-lines.npy", np.array(long_result_lines))
-    np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_error-lines.npy", np.array(long_error_lines))
-
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-hough_plot.pdf", hough_plot, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_plot.pdf", result_plot, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-all_result_plot.pdf", all_result_plot, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result_image.pdf", result_image, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-result-skele_image.pdf", thin_result_lines, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error_image.pdf", error_image, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-error-skele_plot.pdf", thin_error_lines, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-canny-xor-res.pdf",
-               np.logical_xor(hough_plot, result_image), cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-all_error_plot.pdf", all_error_plot, cmap='Greys')
-    plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-long_error_plot.pdf", long_error_plot, cmap='Greys')
-
-    with open("C:\\Malachite\\saved-split\\line_report_" + path.stem + "_" + str(high) + "_" + str(low) + ".txt",
-              "w") as f:
-        f.write("Line, Heading, Length")
-        for x, l in enumerate(long_result_lines):
-            p0, p1 = l
-            string = [str(x), ", ", str(math.degrees(math.atan2((p0[0] - p1[0]), (p0[1] - p1[1])))), ", ",
-                      str(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2))), "\n"]
-            # string.insert(1, str(p0))
-            # string.insert(3, str(p1))
-            # string.insert(5, str(math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2))))
-            # string.insert(7, str(math.degrees(math.atan2(p0[1] - p1[1], p1[0] - p0[0]))))
-            f.write("".join(string))
-
-    with open("C:\\Malachite\\saved-split\\line_report_error_" + path.stem + "_" + str(high) + "_" + str(low) + ".txt",
-              "w") as f:
-        f.write("Line, Heading, Length")
-        for x, l in enumerate(long_error_lines):
-            p0, p1 = l
-            string = [str(x), ", ", str(math.degrees(math.atan2((p0[0] - p1[0]), (p0[1] - p1[1])))), ", ",
-                      str(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2))), "\n"]
-            f.write("".join(string))
-
-    print('done find errors')
     print('full time: ' + str(time.time() - total_time))
 
     return long_result_lines
+
+
+def find_distance(p1, p0):
+    return math.sqrt(math.pow((p1[1]-p0[1]), 2)+math.pow((p1[0]-p0[0]), 2))
