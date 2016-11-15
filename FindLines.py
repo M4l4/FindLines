@@ -68,7 +68,6 @@ if __name__ == "__main__":
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     a = np.array(a)
 
-    lines = find_lines(a, True)
-    for l in lines:
+    found = find_lines(a, True)
+    for l in found:
         print(l)
-
