@@ -61,4 +61,3 @@ for x in long_long:
     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
     plot[rr, cc] = True
 plt.imsave("D:\\long_long.pdf", plot, cmap='Greys')
-plot2 = np.zeros((3270, 5003))
