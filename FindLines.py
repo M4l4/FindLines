@@ -3,52 +3,71 @@ from scipy.ndimage.filters import convolve
 from collections import deque
 
 
-def find_lines(img):
+def find_lines(img, test=False):
     print('finding.........')
     lines = []
-    w = [[1, 1, 1],
-         [1, 10, 1],
-         [1, 1, 1]]
-    b = convolve(img.astype(int), w)
-    b *= (b > 10)
-    l = deque(np.argwhere(b == 11))
-    while l:
-        x = l.pop()
-        if b[x[0], x[1]] != 11:
+    weights = [[1, 1, 1],
+               [1, 10, 1],
+               [1, 1, 1]]
+    weighted_image = convolve(img.astype(int), weights)
+    if test:
+        print(weighted_image)
+    weighted_image *= (weighted_image > 10)
+    endpoint_queue = deque(np.argwhere(weighted_image == 11))
+    while endpoint_queue:
+        start_point = endpoint_queue.pop()
+        if weighted_image[start_point[0], start_point[1]] != 11:
             continue
-        n = x
-        t = True
-        while t:
-            b[n[0], n[1]] = 0
-            c = (b[n[0] - 1:n[0] + 2, n[1] - 1:n[1] + 2])
+        working_point = start_point
+        final_point = False
+        while not final_point:
+            weighted_image[working_point[0], working_point[1]] = 0
+            c = (weighted_image[working_point[0] - 1:working_point[0] + 2, working_point[1] - 1:working_point[1] + 2])
             p = np.flatnonzero(c)
-            if p:
+            if p.size:
                 p = p[0]
             else:
                 break
             if p == 0:
-                n = (n[0] - 1, n[1] - 1)
+                working_point = (working_point[0] - 1, working_point[1] - 1)
             elif p == 1:
-                n = (n[0] - 1, n[1])
+                working_point = (working_point[0] - 1, working_point[1])
             elif p == 2:
-                n = (n[0] - 1, n[1] + 1)
+                working_point = (working_point[0] - 1, working_point[1] + 1)
             elif p == 3:
-                n = (n[0], n[1] - 1)
+                working_point = (working_point[0], working_point[1] - 1)
             elif p == 5:
-                n = (n[0], n[1] + 1)
+                working_point = (working_point[0], working_point[1] + 1)
             elif p == 6:
-                n = (n[0] + 1, n[1] - 1)
+                working_point = (working_point[0] + 1, working_point[1] - 1)
             elif p == 7:
-                n = (n[0] + 1, n[1])
+                working_point = (working_point[0] + 1, working_point[1])
             elif p == 8:
-                n = (n[0] + 1, n[1] + 1)
-            if b[n[0], n[1]] == 11:
-                b[n[0], n[1]] = 0
-                t = False
+                working_point = (working_point[0] + 1, working_point[1] + 1)
+            if weighted_image[working_point[0], working_point[1]] == 11:
+                weighted_image[working_point[0], working_point[1]] = 0
+                final_point = True
                 continue
-            if (b[n[0], n[1]]) != 12:
+            if (weighted_image[working_point[0], working_point[1]]) != 12:
                 break
         else:
-            r = ((x[1], x[0]), (n[1], n[0]))
+            r = ((start_point[1], start_point[0]), (working_point[1], working_point[0]))
             lines.append(r)
     return lines
+
+if __name__ == "__main__":
+    a = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    a = np.array(a)
+
+    found = find_lines(a, True)
+    for l in found:
+        print(l)
