@@ -6,8 +6,8 @@ def hough_split(img, splits, shape, overlap):
     temp = []
     cc_edges = np.repeat(np.linspace(shape[1]/splits, shape[1], splits-1, False, dtype=int), 2)
     rr_edges = np.repeat(np.linspace(shape[0]/splits, shape[0], splits-1, False, dtype=int), 2)
-    print(shape)
-    print("(" + str(shape[0]/splits) + ", " + str(shape[1]/splits) + ")")
+    # print(shape)
+    # print("(" + str(shape[0]/splits) + ", " + str(shape[1]/splits) + ")")
     cc_edges[::2] += overlap
     cc_edges[1::2] -= overlap
     rr_edges[::2] += overlap

@@ -4,7 +4,7 @@ from collections import deque
 
 
 def find_lines(img, test=False):
-    print('finding.........')
+    # print('finding.........')
     lines = []
     weights = [[1, 1, 1],
                [1, 10, 1],

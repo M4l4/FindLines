@@ -14,7 +14,7 @@ files = []
 for f in os.listdir(folder):
     if re.search('(?i).*error-.*\.npy', f):
         files.append(str(Path(folder + "\\" + f).resolve()))
-        print(str(f))
+        # print(str(f))
 
 for f in files:
     path = Path(f)
@@ -53,4 +53,4 @@ for f in files:
     # plt.show()
     plt.savefig("D:\\hist\\" + path.stem + "_90.pdf", format='pdf')
     plt.close()
-    print('done: ' + path.stem)
+    # print('done: ' + path.stem)
