@@ -115,7 +115,7 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
     #     rr, cc = line(int(p0[1]), int(p0[0]), int(p1[1]), int(p1[0]))
     #     long_error_plot[rr, cc] = True
     # print('length time - ignore this: ' + str(time.time() - length_time))
-    np.save("D:\\" + path.stem + "_result-lines.npy", np.array(long_result_lines))
+    # np.save("D:\\" + path.stem + "_result-lines.npy", np.array(long_result_lines))
     # np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_error-lines.npy", np.array(long_error_lines))
     #
     # plt.imsave("C:\\Malachite\\saved-split\\" + path.stem + "-hough_plot.pdf", hough_plot, cmap='Greys')
@@ -152,10 +152,13 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
     #                   str(math.sqrt(math.pow((p1[1] - p0[1]), 2) + math.pow((p1[0] - p0[0]), 2))), "\n"]
     #         f.write("".join(string))
     # print('done find errors')
-
+    #
     # print('full time: ' + str(time.time() - total_time))
 
-    return long_result_lines
+    if not long_result_lines:
+        return True
+    else:
+        return False
 
 
 def find_distance(p1, p0):
