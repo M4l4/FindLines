@@ -13,7 +13,7 @@ import time
 import matplotlib.pyplot as plt
 
 
-def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
+def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1, target=800):
     total_time = time.time()
     path = Path(filename)
     # print(str(path))
@@ -47,7 +47,7 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
         canny_edges = canny(image, sigma, low, high)
 
     hough_split_time = time.time()
-    hough_lines = hough_split(canny_edges, 25, im_shape, 0)
+    hough_lines = hough_split(canny_edges, math.floor(im_shape[1]/target), im_shape, 0)
     np.save("C:\\Malachite\\saved-split\\twice_" + path.stem + "_hough-lines.npy", np.array(hough_lines))
     # print('done hough split')
     # print('hough split time: ' + str(time.time() - hough_split_time))
@@ -155,10 +155,10 @@ def find_errors(filename, reduce_rate=0, otsu=1, high=.9, low=.5, sigma=1):
     #
     # print('full time: ' + str(time.time() - total_time))
 
-    if not long_result_lines:
-        return True
-    else:
+    if long_result_lines:
         return False
+    else:
+        return True
 
 
 def find_distance(p1, p0):

@@ -31,9 +31,11 @@ class Main(tk.Tk):
         self.otsu = tk.IntVar()
         self.high = tk.StringVar()
         self.low = tk.StringVar()
+        self.target = tk.StringVar()
         self.high.set(.9)
         self.low.set(.4)
         self.otsu.set(1)
+        self.target.set(800)
         self.files = []
 
         tk.Label(mainframe, text="Processing:").grid(row=2, column=0, sticky=(tk.W, tk.S))
@@ -82,7 +84,8 @@ class Main(tk.Tk):
         for x, f in enumerate(self.files):
             self.process.set(f)
             self.update_idletasks()
-            if find_errors(f, self.bit_var, self.otsu.get(), float(self.high.get()), float(self.low.get())):
+            if find_errors(f, self.bit_var, self.otsu.get(), float(self.high.get()), float(self.low.get()),
+                           float(self.target.get())):
                 tk.Label(self.file_frame, text='✓', anchor=tk.E).grid(row=x, column=1)
             else:
                 tk.Label(self.file_frame, text='☓', anchor=tk.E).grid(row=x, column=1)
@@ -91,6 +94,11 @@ class Main(tk.Tk):
 
     def pref(self):
         pref_win = tk.Toplevel()
+        x = self.winfo_rootx()
+        y = self.winfo_rooty()
+        h = self.winfo_height()
+        offset = "+%d+%d" % (x, y+h)
+        pref_win.geometry(offset)
         pref_win.transient(self)
         pref_win.grab_set()
         pref_frame = tk.Frame(pref_win)
@@ -110,6 +118,10 @@ class Main(tk.Tk):
         tk.Entry(pref_frame, width=3, textvariable=self.high).grid(row=1, column=2, sticky=tk.W)
         tk.Label(pref_frame, text='Lower threshold').grid(row=2, column=1, sticky=tk.W)
         tk.Entry(pref_frame, width=3, textvariable=self.low).grid(row=2, column=2, sticky=tk.W)
+        tk.Label(pref_frame, text='Target size when running the Hough transform.\n'
+                                  'Higher gives a better result for but takes more time and ram.', justify="left")\
+            .grid(row=3, column=0, columnspan=5, sticky=tk.W)
+        tk.Entry(pref_frame, width=3, textvariable=self.target).grid(row=3, column=2, sticky=tk.W)
 
     def bit_var_change(self):
         self.bit_var = self.bit_depth.get()
