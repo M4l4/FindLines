@@ -59,6 +59,8 @@ class Main(tk.Tk):
                                   tags="self.frame")
 
         self.file_frame.bind("<Configure>", self.on_frame_configure)
+        self.file_frame.bind("<Enter>", self._bound_to_mousewheel)
+        self.file_frame.bind("<Leave>", self._unbound_to_mousewheel)
 
         self.progress = tk.ttk.Progressbar(mainframe, orient=tk.HORIZONTAL, mode='determinate')
         self.progress.grid(row=3, column=0, columnspan=5, sticky=(tk.E, tk.W))
@@ -76,7 +78,7 @@ class Main(tk.Tk):
                 if re.search('(?i)\.jpg', f):
                     self.files.append(str(Path(folder+"\\"+f).resolve()))
             for x, f in enumerate(self.files):
-                tk.Label(self.file_frame, text=f).grid(row=x, column=0)
+                tk.Label(self.file_frame, text=f).grid(row=x, column=0, sticky=tk.W)
 
     def go(self):
         self.progress['value'] = 0
@@ -96,8 +98,7 @@ class Main(tk.Tk):
         pref_win = tk.Toplevel()
         x = self.winfo_rootx()
         y = self.winfo_rooty()
-        h = self.winfo_height()
-        offset = "+%d+%d" % (x, y+h)
+        offset = "+%d+%d" % (x+30, y+30)
         pref_win.geometry(offset)
         pref_win.transient(self)
         pref_win.grab_set()
